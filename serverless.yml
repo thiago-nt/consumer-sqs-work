@@ -1,0 +1,39 @@
+service: mirrorWorker
+
+frameworkVersion: ">=1.2.0 <2.0.0"
+
+provider:
+  stage: dev
+  tracing:
+    sqs: true
+    lambda: true
+  iamRoleStatements:
+    - Effect: "Allow" # xray permissions (required)
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource:
+        - "*"
+  name: aws
+  runtime: java8
+  region: us-east-1
+
+  plugins:
+    - serverless-plugin-tracing
+
+package:
+  artifact: build/distributions/consumerWorker-1.0-SNAPSHOT.zip
+
+functions:
+  mirrorConsumer:
+    handler: br.com.dasa.scheduler.consumer.ConsumerSQS
+    environment:
+      env: ${self:custom.myStage}
+    events:
+      - sqs: ${self:custom.mySqs.${self:custom.myStage}}
+custom:
+  myStage: ${opt:stage, self:provider.stage}
+  mySqs:
+    dev: arn:aws:sqs:us-east-1:536003076564:fila-sqs-dev
+    hml: arn:aws:sqs:us-east-1:536003076564:fila-sqs-hml
+    prod: none

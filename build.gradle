@@ -1,0 +1,56 @@
+group 'br.com.dasa.scheduler.worker'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+
+}
+
+dependencies {
+    annotationProcessor 'org.projectlombok:lombok:1.18.8'
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.0'
+    implementation 'com.amazonaws:aws-lambda-java-events:2.2.7'
+    implementation 'com.amazonaws:aws-java-sdk-sqs:1.11.617'
+    implementation 'com.amazonaws:aws-java-sdk-lambda:1.11.619'
+    implementation 'net.logstash.logback:logstash-logback-encoder:4.11'
+    implementation 'com.internetitem:logback-elasticsearch-appender:1.6'
+    implementation 'org.projectlombok:lombok:1.18.8'
+    implementation 'ch.qos.logback:logback-core:1.2.3'
+    implementation 'org.slf4j:slf4j-api:1.7.28'
+    implementation 'org.slf4j:slf4j-simple:1.7.28'
+    runtimeOnly 'org.jlib:jlib-awslambda-logback:1.0.0'
+    implementation 'io.github.openfeign:feign-okhttp:10.4.0'
+    implementation 'io.github.openfeign:feign-gson:10.4.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.0.0'
+    testImplementation 'org.hamcrest:hamcrest-library:2.1'
+    compile 'com.amazonaws:aws-xray-recorder-sdk-core:2.2.0'
+    compile 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.2.0'
+    compile 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor:2.2.0'
+	compile group: 'org.apache.camel', name: 'camel-core', version: '2.24.2'
+	compile group: 'org.apache.camel', name: 'camel-spring', version: '2.24.2'
+	compile group: 'org.apache.camel', name: 'camel-spring-javaconfig', version: '2.24.2'
+	testCompile group: 'org.apache.camel', name: 'camel-jackson', version: '2.24.2'
+	testCompile group: 'org.apache.camel', name: 'camel-http4', version: '2.24.2'
+	testCompile group: 'org.apache.camel', name: 'camel-http', version: '2.24.2'
+    compile group: 'org.apache.camel', name: 'camel-http-common', version: '2.24.2'
+    compile group: 'org.apache.camel', name: 'camel-metrics', version: '2.24.2'
+    compile group: 'org.springframework', name: 'spring-web', version: '3.0.4.RELEASE'
+
+}
+
+task buildZip(type: Zip) {
+    baseName = "consumerWorker"
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}
+
+build.dependsOn buildZip
+
